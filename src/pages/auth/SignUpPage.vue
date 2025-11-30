@@ -1,25 +1,35 @@
 <script setup>
 import { ref } from 'vue'
+import { supabase } from '/src/services/supabase/supabaseClient.js'
 
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+
+async function signUp() {
+  console.log('signUp');
+  
+  const { data, error } = await supabase.auth.signUp({
+    email: email.value,
+    password: confirmPassword.value,
+  })
+
+  if (error) {
+    console.error('Supabase error:', error.message)
+  } else {
+    console.log('Supabase OK, session:', data.session)
+  }
+}
 </script>
 
 <template>
   <div class="auth-container">
     <div class="auth-card">
       <h1>Регистрация</h1>
-      <form @submit.prevent>
+      <form @submit.prevent="signUp()">
         <div class="form-group">
           <label for="email">Email</label>
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            required
-            placeholder="your@email.com"
-          />
+          <input id="email" v-model="email" type="email" required placeholder="your@email.com" />
         </div>
         <div class="form-group">
           <label for="password">Пароль</label>
@@ -43,9 +53,7 @@ const confirmPassword = ref('')
             minlength="6"
           />
         </div>
-        <button type="submit" class="btn btn-primary">
-          Зарегистрироваться
-        </button>
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
       </form>
       <p class="auth-link">
         Уже есть аккаунт?

@@ -8,17 +8,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!user.value)
 
-  async function init() {
-  }
+  async function init() {}
 
-  async function signUp(email, password) {
-  }
+  async function signUp(email, password) {}
 
-  async function signIn(email, password) {
-  }
+  async function signIn(email, password) {}
 
-  async function signOut() {
-  }
+  async function signOut() {}
 
   return {
     user,
