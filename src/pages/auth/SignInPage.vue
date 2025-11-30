@@ -1,27 +1,20 @@
 <script setup>
 import { ref } from 'vue'
-import { supabase } from '/src/services/supabase/supabaseClient.js'
+import { useAuthStore } from '../../stores/auth'
+
+const authStore = useAuthStore()
 
 const email = ref('')
-const password = ref('')
+const password = ref('2570WaDs!')
+const error = ref('')
 
 async function signIn() {
-  console.log('supabase', supabase)
+  error.value = ''
 
-  console.log('email', email.value)
-  console.log('password', password.value)
-  if (condition) {
-  }
+  const { error: signInError } = await authStore.signIn(email.value, password.value)
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.value,
-    password: password.value,
-  })
-
-  if (error) {
-    console.error('Supabase error:', error.message)
-  } else {
-    console.log('Supabase OK, session:', data.session)
+  if (signInError) {
+    error.value = signInError.message || 'Ошибка входа'
   }
 }
 </script>
@@ -39,7 +32,10 @@ async function signIn() {
           <label for="password">Пароль</label>
           <input id="password" v-model="password" type="password" required placeholder="••••••••" />
         </div>
-        <button type="submit" class="btn btn-primary">Войти</button>
+        <div v-if="error" class="error-message">{{ error }}</div>
+        <button type="submit" class="btn btn-primary" :disabled="authStore.loading">
+          {{ authStore.loading ? 'Вход...' : 'Войти' }}
+        </button>
       </form>
       <p class="auth-link">
         Нет аккаунта?

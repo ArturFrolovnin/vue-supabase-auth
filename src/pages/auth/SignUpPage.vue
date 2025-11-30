@@ -1,23 +1,31 @@
 <script setup>
 import { ref } from 'vue'
-import { supabase } from '/src/services/supabase/supabaseClient.js'
+import { useAuthStore } from '../../stores/auth'
+
+const authStore = useAuthStore()
 
 const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
+const password = ref('2570WaDs!')
+const confirmPassword = ref('2570WaDs!')
+const error = ref('')
 
 async function signUp() {
-  console.log('signUp');
-  
-  const { data, error } = await supabase.auth.signUp({
-    email: email.value,
-    password: confirmPassword.value,
-  })
+  error.value = ''
 
-  if (error) {
-    console.error('Supabase error:', error.message)
-  } else {
-    console.log('Supabase OK, session:', data.session)
+  if (password.value !== confirmPassword.value) {
+    error.value = 'Пароли не совпадают'
+    return
+  }
+
+  if (password.value.length < 6) {
+    error.value = 'Пароль должен содержать минимум 6 символов'
+    return
+  }
+
+  const { error: signUpError } = await authStore.signUp(email.value, password.value)
+
+  if (signUpError) {
+    error.value = signUpError.message || 'Ошибка регистрации'
   }
 }
 </script>
@@ -53,7 +61,10 @@ async function signUp() {
             minlength="6"
           />
         </div>
-        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        <div v-if="error" class="error-message">{{ error }}</div>
+        <button type="submit" class="btn btn-primary" :disabled="authStore.loading">
+          {{ authStore.loading ? 'Регистрация...' : 'Зарегистрироваться' }}
+        </button>
       </form>
       <p class="auth-link">
         Уже есть аккаунт?

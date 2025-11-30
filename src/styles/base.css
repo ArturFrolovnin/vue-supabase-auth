@@ -77,6 +77,12 @@ textarea::placeholder {
   margin-bottom: var(--spacing-md);
 }
 
+.error-message {
+  color: var(--error-color);
+  margin-bottom: var(--spacing-md);
+  font-size: 0.875rem;
+}
+
 button {
   border: none;
   background: none;
