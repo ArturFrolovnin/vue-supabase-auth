@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { formatDate } from '../../utils/formatDate.js'
+import { supabase } from '/src/services/supabase/supabaseClient.js'
 
 const authStore = useAuthStore()
 
@@ -19,6 +20,32 @@ const sessionToken = computed(() => authStore.session?.access_token || 'Токе
 
 async function handleLogout() {
   await authStore.signOut()
+}
+
+async function logData() {
+
+  // get data from profile
+  console.log('supabase', supabase)
+
+
+  const { data, error } = await supabase
+  .from('profile')
+  .select('*')
+ 
+
+  // const { data, error } = await supabase
+  //   .from('profile')
+  //   .insert({
+  //     bio: 'defeloper web',
+  //     age: '28',
+  //   })
+  //   .select()
+  //   .single()
+
+  if (error) {
+    console.error(error)
+  }
+  console.log('data', data)
 }
 </script>
 
@@ -49,9 +76,12 @@ async function handleLogout() {
         </div>
       </div>
 
-      <button @click="handleLogout" class="btn btn-secondary" :disabled="authStore.loading">
-        {{ authStore.loading ? 'Выход...' : 'Выход' }}
-      </button>
+      <div class="actions-section">
+        <button @click="handleLogout" class="btn btn-secondary" :disabled="authStore.loading">
+          {{ authStore.loading ? 'Выход...' : 'Выход' }}
+        </button>
+        <button @click="logData" class="btn btn-primary">Данные</button>
+      </div>
     </div>
   </div>
 </template>
@@ -68,7 +98,6 @@ async function handleLogout() {
 .home-content {
   width: 100%;
   max-width: 600px;
-  text-align: center;
   background: var(--card-bg);
   padding: var(--spacing-xl);
   border-radius: var(--border-radius);
@@ -77,6 +106,7 @@ async function handleLogout() {
 
 h1 {
   margin: 0 0 var(--spacing-xl) 0;
+  text-align: center;
   font-size: 2rem;
   color: var(--text-color);
 }
@@ -122,5 +152,22 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.actions-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+}
+
+.actions-section .btn {
+  flex: 1;
+  max-width: none;
+}
+
+.actions-section .btn:first-child {
+  margin-right: var(--spacing-md);
 }
 </style>
